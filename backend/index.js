@@ -42,18 +42,21 @@ startServer();
 io.on("connection", (socket) => {
   console.log("🔌 Client connected:", socket.id);
 
-  socket.emit(
-    "message",
-    `📩 Hello from server (${new Date().toLocaleTimeString()})`
-  );
+  socket.on("send_message", ({ username, text }) => {
+    const message = {
+      id: socket.id,
+      username,
+      text,
+      time: new Date().toLocaleTimeString(),
+    };
 
-  socket.on("send_message", (msg) => {
-    console.log("📥 Received message from client:", msg);
-    // Example: broadcast it
-    socket.broadcast.emit("message", `🗣️ ${msg}`);
+    console.log("📥 Message received:", message);
+
+    // Broadcast to all clients (including sender)
+    io.emit("message", message);
   });
 
   socket.on("disconnect", () => {
-    console.log("❌ Client disconnected:", socket.id);
+    console.log("❌ Disconnected:", socket.id);
   });
 });
