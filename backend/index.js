@@ -4,6 +4,10 @@ const http = require("http");
 const { Server } = require("socket.io");
 const connectDB = require("./dbConnect");
 const cors = require("cors");
+const { socketIoHandlers } = require("./soket/soket");
+
+// MongoDB connection and server start
+const PORT = process.env.PORT || 3000;
 
 // Setup
 const app = express();
@@ -15,12 +19,26 @@ const io = new Server(server, {
   },
 });
 
+socketIoHandlers(io);
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// MongoDB connection and server start
-const PORT = process.env.PORT || 3000;
+// REST API
+app.get("/api", async (req, res) => {
+  try {
+    return res.status(200).send({
+      status: true,
+      message: "request success",
+    });
+  } catch (error) {
+    return res.status(400).send({
+      status: false,
+      message: error.message || "Something went wrong!",
+    });
+  }
+});
 
 const startServer = async () => {
   try {
@@ -37,26 +55,3 @@ const startServer = async () => {
 };
 
 startServer();
-
-// 💬 Socket.IO logic
-io.on("connection", (socket) => {
-  console.log("🔌 Client connected:", socket.id);
-
-  socket.on("send_message", ({ username, text }) => {
-    const message = {
-      id: socket.id,
-      username,
-      text,
-      time: new Date().toLocaleTimeString(),
-    };
-
-    console.log("📥 Message received:", message);
-
-    // Broadcast to all clients (including sender)
-    io.emit("message", message);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("❌ Disconnected:", socket.id);
-  });
-});
