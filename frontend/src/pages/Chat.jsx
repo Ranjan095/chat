@@ -13,6 +13,13 @@ function Chat() {
       setMessages((prev) => [...prev, data]);
     });
 
+    socket.emit("load_public_chat");
+
+    socket.on("chat_history", (msgs) => {
+      console.log("Chat history:", msgs);
+      setMessages(msgs)
+    });
+
     return () => {
       socket.off("message");
     };
@@ -58,7 +65,7 @@ function Chat() {
       <div className="space-y-1 max-h-80 overflow-y-auto">
         {messages.map((m, i) => (
           <div key={i} className="p-2 bg-gray-100 rounded">
-            <span className="font-semibold">{m.username}</span>{" "}
+            <span className="font-semibold">{m.from}</span>{" "}
             <span className="text-sm text-gray-500">({m.time})</span>
             <div>{m.text}</div>
           </div>

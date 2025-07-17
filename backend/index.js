@@ -5,12 +5,17 @@ const { Server } = require("socket.io");
 const connectDB = require("./dbConnect");
 const cors = require("cors");
 const { socketIoHandlers } = require("./soket/soket");
+const passport = require("passport");
 
 // MongoDB connection and server start
 const PORT = process.env.PORT || 3000;
 
 // Setup
 const app = express();
+app.use(express.json());
+app.use(passport.initialize());
+
+
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {

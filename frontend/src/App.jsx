@@ -1,10 +1,10 @@
 import React from "react";
-import Chat from "./pages/Chat";
+import AllRoutes from "./allRoutes/AllRoutes";
 
 const App = () => {
   return (
     <div>
-      <Chat />
+      <AllRoutes />
     </div>
   );
 };
